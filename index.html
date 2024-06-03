@@ -2,6 +2,14 @@
 <html lang="en">
 
 <head>
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "829f9bdd3dbf4d44b3ee573e3338394a"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+                        
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,6 +96,14 @@
   </main>
 
   <script>
+    // Custom obj
+    class DivByZeroError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "DivByZeroError";
+      }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -96,12 +112,95 @@
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
       output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+
+      let finalOutput = NaN;
+      try {
+        if (operator == `/` && secondNum == 0) {
+          throw new DivByZeroError("Cannot Divide By 0");
+        }
+        finalOutput = eval(`${firstNum} ${operator} ${secondNum}`);
+      }
+      catch(err) {
+        console.error(err);
+        finalOutput = `Undefined`;
+      }
+      finally {
+        output.innerHTML = finalOutput;
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
     // Start your code here
     // You may move this JS to another file if you wish
+    errorBtns.forEach(button => {
+      button.addEventListener('click', () => {
+        if (button.textContent === 'Console Log') {
+          console.log('This is a console log message.');
+        } else if (button.textContent === 'Console Error') {
+          console.error('This is a console error message.');
+        } else if (button.textContent === 'Console Count') {
+          console.count('Count Button');
+        } else if (button.textContent === 'Console Warn') {
+          console.warn('This is a console warn message.');
+        } else if (button.textContent === 'Console Assert') {
+          const x = 5;
+          const y = 3;
+          const reason = 'x is expected to be less than y';
+          console.assert(x < y, {x, y, reason});
+        } else if (button.textContent === 'Console Clear') {
+          console.clear();
+        } else if (button.textContent === 'Console Dir') {
+          console.dir(document.head);
+        } else if (button.textContent === 'Console dirxml') {
+          console.dirxml(document);
+        } else if (button.textContent === 'Console Group Start') {
+          console.group('Grouped Messages');
+          console.info('Leo');
+          console.info('Mike');
+          console.info('Don');
+          console.info('Raph');
+        } else if (button.textContent === 'Console Group End') {
+          console.groupEnd();
+        } else if (button.textContent === 'Console Table') {
+          var people = [
+            {
+              first: 'René',
+              last: 'Magritte',
+            },
+            {
+              first: 'Chaim',
+              last: 'Soutine',
+              birthday: '18930113',
+            },
+            {
+              first: 'Henri',
+              last: 'Matisse',
+            }
+          ];
+          console.table(people);
+        } else if (button.textContent === 'Start Timer') {
+          console.time('Timer');
+        } else if (button.textContent === 'End Timer') {
+          console.timeEnd('Timer');
+        } else if (button.textContent === 'Console Trace') {
+          const first = () => { second(); };
+          const second = () => { third(); };
+          const third = () => { fourth(); };
+          const fourth = () => { console.trace(); };
+          first();
+        } else if (button.textContent === 'Trigger a Global Error') {
+          abooM('bad code!'); /* BAD CODE ON PURPOSE */ 
+        }
+      });
+    });
+
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.log('Catching global error console step 5')
+      console.error('Global error caught:', {message, source, lineno, colno, error});
+      return true; // Prevents the browser from further handling the error
+    };
+                            
   </script>
 </body>
 
